@@ -130,7 +130,7 @@ class BaseIteration(object):
 		d.time_stamps[budget] = timestamps
 		d.results[budget] = result
 
-		if (not job.result is None) and np.isfinite(result['loss']):
+		if (not job.result is None) and (not result['loss'] is None) and np.isfinite(result['loss']):
 			d.status = 'REVIEW'
 		else:
 			d.status = 'CRASHED'

@@ -17,7 +17,7 @@ from hpbandster.core.base_config_generator import base_config_generator
 class BOHB(base_config_generator):
 	def __init__(self, configspace, min_points_in_model = None,
 				 top_n_percent=15, num_samples = 64, random_fraction=1/3,
-				 bandwidth_factor=3, min_bandwidth=1e-3,
+				 bandwidth_factor=3, min_bandwidth=1e-3, ignore_crashes=False,
 				**kwargs):
 		"""
 			Fits for each given budget a kernel density estimator on the best N percent of the
@@ -50,6 +50,7 @@ class BOHB(base_config_generator):
 		self.configspace = configspace
 		self.bw_factor = bandwidth_factor
 		self.min_bandwidth = min_bandwidth
+		self.ignore_crashes = ignore_crashes
 
 		self.min_points_in_model = min_points_in_model
 		if min_points_in_model is None:
@@ -282,8 +283,10 @@ class BOHB(base_config_generator):
 
 		super().new_result(job)
 
-		if job.result is None:
+		if job.result is None or job.result["loss"] is None:
 			# One could skip crashed results, but we decided to
+			if self.ignore_crashes:
+				return
 			# assign a +inf loss and count them as bad configurations
 			loss = np.inf
 		else:
