@@ -185,7 +185,7 @@ class Dispatcher(object):
 	@Pyro4.oneway
 	def trigger_discover_worker(self):
 		#time.sleep(1)
-		self.logger.info("DISPATCHER: A new worker triggered discover_worker")
+		self.logger.debug("DISPATCHER: A new worker triggered discover_worker")
 		with self.discover_cond:
 			self.discover_cond.notify()
 
